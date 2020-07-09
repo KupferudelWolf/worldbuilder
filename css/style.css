@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+}
+
+.wrapper {
+  width: auto;
+  height: auto;
+  margin: 32px;
+  margin-bottom: 0px;
+  background-color: #ffaaaa;
+  padding-left: 100px;
+  padding-top: 16px;
+  padding-bottom: 24px;
+  display: block;
+}
+
+.row {
+  background-color: #aaaaff;
+}
