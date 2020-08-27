@@ -1,35 +1,38 @@
 const DATA = [
   {
-    template: 'character',
-    name: 'Abigail',
-    nickname: 'Abby',
-    gender: 'Female',
-    birthdate: 720328,
-    home: 'Trioe Town',
-    species: 'Absol'
+    'template': 'character',
+    'Name': 'Abigail',
+    'Nickname': 'Abby',
+    'Gender': 'Female',
+    'Birthdate': new Date('28 Mar 1972'),
+    'Home': 'Trioe Town',
+    'Species': 'Absol'
   }
 ];
 const TEMPLATES = {
   character: [
     {
-      title: 'Basics',
-      name: {form: 'text'},
-      nickname: {form: 'text'},
-      gender: {
+      'title': 'Basics',
+      'Name': {form: 'text'},
+      'Nickname': {form: 'text'},
+      'Gender': {
         form: 'choice',
         list: ['Male', 'Female', 'Other']
       },
-      age: {
+      'Age': {
         form: 'calc',
-        func: function (t) {
-          return Math.floor((_date - t.birthdate)/1000);
+        func: function (data) {
+          let age = _date.getFullYear() - data.Birthdate.getFullYear();
+          return Math.floor(age) + ' years old';
         }
       },
-      birthdate: {form: 'date'}
+      'Birthdate': {
+        form: 'date'
+      }
     }
   ]
 };
-var _date = 1000101;
+var _date = new Date(Date.now());
 
 (function () {
   $(document).ready(function () {
@@ -38,29 +41,28 @@ var _date = 1000101;
       let section = $('<section>').addClass('wrapper').appendTo('body').first();
       if (data.name) section.attr('id', data.name);
 
-      TEMPLATES[data.template].forEach((rowData) => {
-        let row = $('<section>')
-          .attr('id', rowData.title)
-          .addClass('row')
+      TEMPLATES[data.template].forEach((sectData) => {
+        let sect = $('<table>')
+          .addClass('section')
+          .attr('id', sectData.title)
           .appendTo(section)
           .first();
-        for (const prop in rowData) {
+        for (const prop in sectData) {
           let key = prop,
-              val = rowData[prop];
+              val = sectData[prop];
           if (key !== 'title') {
-            let attr = {};
-            let value = (data[key]+'') || '';
+            let attr = {},
+                value = (data[key]+'') || '',
+                element;
             switch (val.form) {
               case 'text':
-                $('<input>')
+                element = $('<input>')
                   .attr('type', 'text')
-                  .attr('id', key)
-                  .attr('value', value)
-                  .appendTo(row);
+                  .attr('value', value);
                 break;
               case 'choice':
-                let container = $('<span>');
-                container.attr('id', key).appendTo(row);
+                element = $('<span>');
+                // element.attr('id', key).appendTo(sect);
                 val.list.forEach((option) => {
                   let checked = value === option ? 'checked' : null;
                   $('<input>')
@@ -69,29 +71,41 @@ var _date = 1000101;
                     .attr('name', key)
                     .attr('value', option)
                     .attr('checked', checked)
-                    .appendTo(container);
+                    .appendTo(element);
                   $('<label>')
                     .attr('for', key + '-' + option)
                     .html(option)
-                    .appendTo(container);
+                    .appendTo(element);
                 });
                 break;
               case 'calc':
-                attr = {
-
-                };
+                let txt = val.func(data);
+                element = $('<span>')
+                  .html(txt);
                 break;
               case 'date':
-                attr = {
-
-                };
+                element = $('<span>');
                 break;
               default:
-                attr = {
-
-                };
+                element = $('<span>');
                 break;
             }
+
+            let row = $('<tr>')
+              .addClass('item')
+              .attr('id', key)
+              .appendTo(sect);
+
+            $('<th>')
+              .addClass('item-title')
+              .html(key + ': ')
+              .wrap('<td />')
+              .appendTo(row);
+
+            element
+              .wrap('<td />')
+              .parent()
+              .appendTo(row);
           }
         };
       });
