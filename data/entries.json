@@ -1,0 +1,33 @@
+[
+  {
+    "class": "character",
+    "title": "Abigail",
+    "desc": "",
+    "focus": true,
+    "bubble": {
+      "x": 500,
+      "y": 800
+    },
+    "stats": {
+      "Name": "Abigail",
+      "Nickname": "Abby",
+      "Gender": "Female",
+      "Home": "Trioe Town",
+      "Species": "Absol"
+    },
+    "events": [
+      "abigail_was_born-1f3ok8sv5"
+    ]
+  },
+  {
+    "class": "event",
+    "title": "Abigail was born.",
+    "desc": "",
+    "id": "abigail_was_born-1f3ok8sv5",
+    "timestamp": "Y-20 D140",
+    "bubble": {
+      "x": 550,
+      "y": 990
+    }
+  }
+]

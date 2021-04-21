@@ -1,44 +1,9 @@
 /// Temporary.
-const DATA = [
-  {
-    class: 'character',
-    title: 'Abigail',
-    desc: '',
-    focus: true,
-    bubble: {
-      x: 500,
-      y: 800
-    },
-    stats: {
-      'Name': 'Abigail',
-      'Nickname': 'Abby',
-      'Gender': 'Female',
-      'Home': 'Trioe Town',
-      'Species': 'Absol'
-    },
-    events: [
-      'abigail_was_born-1f3ok8sv5'
-    ]
-  },
-  {
-    class: 'event',
-    title: 'Abigail was born.',
-    desc: '',
-    id: 'abigail_was_born-1f3ok8sv5',
-    timestamp: 'Y-20 D140',
-    bubble: {
-      x: 550,
-      y: 990
-    }
-  }
-];
-
-/// Temporary.
 console.log(Date.now().toString(32));
 
 (function () {
 
-    var _dragging, BUBBLE_FRAME, BUBBLE_CONTAINER;
+    var _dragging, DATA, BUBBLE_FRAME, BUBBLE_CONTAINER;
 
     const SVG = $(document.createElementNS('http://www.w3.org/2000/svg','svg')),
           /// DICT holds all bubbles / entries.
@@ -79,8 +44,27 @@ console.log(Date.now().toString(32));
             }
           },
 
-          /// Load data from JSON (well, from test data at the moment).
+          /// Load data from JSON.
           loadEntires = function () {
+            let deferred = $.Deferred();
+
+            $.getJSON('./data/entries.json', (data) => {
+              DATA = data;
+            }).fail(function () {
+              console.error('Invalid data file.');
+              deferred.reject();
+            }).success(deferred.resolve);
+
+            return deferred;
+          },
+
+          /// Save data to JSON.
+          saveEntries = function () {
+            //
+          },
+
+          /// Initialize the bubbles and their container.
+          initBubbles = function () {
             let corners = { bottom: 0, right: 0 },
                 defaultFramePosition, startX, startY, left, top, rate;
 
@@ -279,7 +263,6 @@ console.log(Date.now().toString(32));
 
         if (this.class === 'event') {
           let targs = DICT.select('!event');
-          console.log(targs);
           for (let i = 0, l = targs.length; i < l; ++i) {
             let bubble = targs[i];
             if (!bubble.events.includes(this.id)) continue;
@@ -312,7 +295,9 @@ console.log(Date.now().toString(32));
       SVG.appendTo(BUBBLE_CONTAINER);
       SVG.get(0).classList.add('bubbleSVG');
 
-      loadEntires();
-      controlDrag();
+      loadEntires().then(() => {
+        initBubbles();
+        controlDrag();
+      });
   });
 })();
