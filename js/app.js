@@ -38,10 +38,13 @@ console.log(Date.now().toString(32));
                     && !blacklist.includes('!'+key);
                 })
                 .reduce((obj, key) => {
-                  //obj[key] = DICT[key];
-                  obj.push(...DICT[key]);
+                  let arr = DICT[key];
+                  arr.forEach((v) => {
+                    obj[v.id] = v;
+                  });
+                  // obj.push(...DICT[key]);
                   return obj;
-                }, []);
+                }, {});
             }
           },
 
@@ -141,11 +144,13 @@ console.log(Date.now().toString(32));
                   left: dX * rate + left + 'px',
                   top:  dY * rate + top  + 'px'
                 });
+                _dragging.self.trigger('drag:onmove');
               })
               .on('mouseup mouseleave', (e) => {
                 if (!_dragging) return;
                 e.preventDefault();
 
+                _dragging.self.trigger('drag:mouseoff');
                 _dragging.self.removeClass('active');
                 _dragging = false;
               });
@@ -198,9 +203,8 @@ console.log(Date.now().toString(32));
             y: y || 0
           }
         }
-        this.x = prop.bubble.x;
-        this.y = prop.bubble.y;
-        this.events = prop.events || [];
+        this._x = prop.bubble.x;
+        this._y = prop.bubble.y;
         this.class = prop.class || 'event';
         this.title = prop.title || 'New Bubble';
         this.id = prop.id;
@@ -211,6 +215,9 @@ console.log(Date.now().toString(32));
             .replace(/[^0-9a-z_]/g, '')
             + '-' + Date.now().toString(32);
         }
+        /// Parents & Children
+        this.parents = [];
+        this.events = prop.events || [];
 
         DICT.add(this);
 
@@ -225,13 +232,14 @@ console.log(Date.now().toString(32));
           .html(`<p>${this.title}</p>`)
           .appendTo(BUBBLE_CONTAINER);
 
+        /// Create mouse events.
         let startX, startY, moved;
         this.element
-          .on('mousedown', function (e) {
+          .on('mousedown', (e) => {
             if (_dragging) return;
             e.stopPropagation();
             _dragging = {
-              self: $(this),
+              self: this.element,
               e: e
             };
             startX = e.pageX;
@@ -239,54 +247,90 @@ console.log(Date.now().toString(32));
             moved = false;
             BUBBLE_FRAME.trigger('mousedown');
           })
-          .on('mousemove', function (e) {
+          .on('mousemove', (e) => {
             if (!_dragging) return;
-            const self = $(this);
             let dX = e.pageX - startX,
                 dY = e.pageY - startY;
             if (Math.abs(dX) >= 1 || Math.abs(dY) >= 1) {
               moved = true;
             }
-            self.trigger('bubble:onmove');
           })
-          .on('mouseup mouseleave', function () {
+          .on('drag:mouseoff', () => {
             // if (!_dragging) return;
-            const self = $(this);
+            const self = this.element;
             let left = self.css('left').slice(0, -2),
-                top = self.css('top').slice(0, -2);
+                top = self.css('top').slice(0, -2),
+                collide = false;
             left = Math.min(Math.max(left, 0), BUBBLE_CONTAINER.width() - self.width());
             top = Math.min(Math.max(top, 0), BUBBLE_CONTAINER.height() - self.height());
-            self.css('left', left + 'px');
-            self.css('top',  top + 'px');
-            // self.trigger('bubble:onmove');
+            this.x = left;
+            this.y = top;
+            if (!_dragging) return;
+            console.log(this.x, this.y);
+            // this.parents.forEach((bubble) => {
+            //   let dist = Math.sqrt((bubble.x - this.x)**2 + (bubble.y - this.y)**2);
+            //   let radii = Math.max(bubble.element.width(), bubble.element.height());
+            //   if (dist < radii) {
+            //     console.log(self);
+            //     self.css({
+            //       'width': bubble.element.css('width'),
+            //       'height': bubble.element.css('height')
+            //     });
+            //     this.x = bubble.x;
+            //     this.y = bubble.y;
+            //     collide = true;
+            //     return;
+            //   }
+            // });
+            // if (!collide) {
+            //   self.css({
+            //     'width': '',
+            //     'height': ''
+            //   });
+            // }
           });
 
-        console.log(this.class, this);
+        /// Connect bubbles.
         if (this.class === 'event') {
           let targs = DICT.select('!event');
-          console.log(targs);
-          for (let i = 0, l = targs.length; i < l; ++i) {
-            let bubble = targs[i];
+          for (let key in targs) {
+            let bubble = targs[key];
             if (!bubble.events.includes(this.id)) continue;
             bubble.createLine(this.element);
+            this.parents.push(bubble);
           }
         } else {
           for (let i = 0, l = this.events.length; i < l; ++i) {
             let id = this.events[i];
-            let target = $(`#${id}`);
-            if (!target.length) continue;
-            this.createLine(target);
+            let target = DICT[id];
+            if (!target) continue;
+            this.createLine(target.element);
+            target.parents.push(this);
           }
         }
+      }
+
+      get x() {return this._x;}
+      set x(val) {
+        this._x = val;
+        this.element.css('left', val + 'px');
+        this.element.trigger('drag:onmove');
+      }
+
+      get y() {return this._y;}
+      set y(val) {
+        this._y = val;
+        this.element.css('top', val + 'px');
+        this.element.trigger('drag:onmove');
       }
 
       createLine(targ) {
         let self = this.element,
             line = $(document.createElementNS('http://www.w3.org/2000/svg','line'));
         SVG.append(line);
-        updateLine([self, targ], line)
-        self.on('bubble:onmove', () => updateLine([self, targ], line));
-        targ.on('bubble:onmove', () => updateLine([self, targ], line));
+        updateLine([self, targ], line);
+        self.on('drag:onmove', () => updateLine([self, targ], line));
+        targ.on('drag:onmove', () => updateLine([self, targ], line));
       }
     }
 
