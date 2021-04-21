@@ -26,8 +26,8 @@
     "desc": "",
     "id": "trioe_town-1f3q3b99p",
     "bubble": {
-      "x": 800,
-      "y": 600
+      "x": 667,
+      "y": 645
     },
     "stats": {},
     "events": [
@@ -41,8 +41,8 @@
     "id": "abigail_was_born-1f3ok8sv5",
     "timestamp": "Y-20 D140",
     "bubble": {
-      "x": 550,
-      "y": 990
+      "x": 386,
+      "y": 976
     }
   },
   {
@@ -52,8 +52,8 @@
     "id": "abigail_moved_to_trioe_town-1f3q3d3ch",
     "timestamp": "Y-1 D41",
     "bubble": {
-      "x": 620,
-      "y": 1100
+      "x": 629,
+      "y": 907
     }
   }
 ]
