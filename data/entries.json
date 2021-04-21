@@ -16,7 +16,22 @@
       "Species": "Absol"
     },
     "events": [
-      "abigail_was_born-1f3ok8sv5"
+      "abigail_was_born-1f3ok8sv5",
+      "abigail_moved_to_trioe_town-1f3q3d3ch"
+    ]
+  },
+  {
+    "class": "location",
+    "title": "Trioe Town",
+    "desc": "",
+    "id": "trioe_town-1f3q3b99p",
+    "bubble": {
+      "x": 800,
+      "y": 600
+    },
+    "stats": {},
+    "events": [
+      "abigail_moved_to_trioe_town-1f3q3d3ch"
     ]
   },
   {
@@ -28,6 +43,17 @@
     "bubble": {
       "x": 550,
       "y": 990
+    }
+  },
+  {
+    "class": "event",
+    "title": "Abigail moved to Trioe Town.",
+    "desc": "",
+    "id": "abigail_moved_to_trioe_town-1f3q3d3ch",
+    "timestamp": "Y-1 D41",
+    "bubble": {
+      "x": 620,
+      "y": 1100
     }
   }
 ]

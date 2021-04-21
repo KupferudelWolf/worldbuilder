@@ -38,8 +38,9 @@ console.log(Date.now().toString(32));
                     && !blacklist.includes('!'+key);
                 })
                 .reduce((obj, key) => {
-                  obj[key] = DICT[key];
-                  return obj[key];
+                  //obj[key] = DICT[key];
+                  obj.push(...DICT[key]);
+                  return obj;
                 }, []);
             }
           },
@@ -152,43 +153,42 @@ console.log(Date.now().toString(32));
 
           /// Line manipulation; for Bubble internal use.
           updateLine = function (elems, line) {
-      let attr = {}, pos = [], rad = [], dist, angle, radii = 0;
+            let attr = {}, pos = [], rad = [], dist, angle, radii = 0;
 
-      for (let i = 0; i < 2; ++i) {
-        let e = elems[i];
-        pos[i] = elems[i].position();
-        rad[i] = [
-          e.outerWidth()/2,
-          e.outerHeight()/2
-        ];
-        radii += Math.max(...rad[i]);
-        pos[i].left += rad[i][0];
-        pos[i].top += rad[i][1];
-      }
+            for (let i = 0; i < 2; ++i) {
+              let e = elems[i];
+              pos[i] = elems[i].position();
+              rad[i] = [
+                e.outerWidth()/2,
+                e.outerHeight()/2
+              ];
+              radii += Math.max(...rad[i]);
+              pos[i].left += rad[i][0];
+              pos[i].top += rad[i][1];
+            }
 
-      dist = Math.sqrt((pos[1].top - pos[0].top)**2 + (pos[1].left - pos[0].left)**2);
-      if (dist <= radii) {
-        /// Circles meet or intersect.
-        line.attr({
-          x1: 0, x2: 0,
-          y1: 0, y2: 0
-        });
-        return;
-      }
+            dist = Math.sqrt((pos[1].top - pos[0].top)**2 + (pos[1].left - pos[0].left)**2);
+            if (dist <= radii) {
+              /// Circles meet or intersect.
+              line.attr({
+                x1: 0, x2: 0,
+                y1: 0, y2: 0
+              });
+              return;
+            }
 
-      angle = Math.atan2(pos[1].top - pos[0].top, pos[1].left - pos[0].left);
+            angle = Math.atan2(pos[1].top - pos[0].top, pos[1].left - pos[0].left);
 
-      for (let i = 0; i < 2; ++i) {
-        let sgn = 1,//i ? -1 : 1,
-            x = pos[i].left + sgn * Math.cos(angle) * rad[i][0],
-            y = pos[i].top + sgn * Math.sin(angle) * rad[i][1];
-        attr[`x${i+1}`] = Math.round(x);
-        attr[`y${i+1}`] = Math.round(y);
-        angle += Math.PI;
-      }
+            for (let i = 0; i < 2; ++i) {
+              let x = pos[i].left + Math.cos(angle) * rad[i][0],
+                  y = pos[i].top + Math.sin(angle) * rad[i][1];
+              attr[`x${i+1}`] = Math.round(x);
+              attr[`y${i+1}`] = Math.round(y);
+              angle += Math.PI;
+            }
 
-      line.attr(attr);
-    };
+            line.attr(attr);
+          };
 
     class Bubble {
       constructor(prop, x, y) {
@@ -261,8 +261,10 @@ console.log(Date.now().toString(32));
             // self.trigger('bubble:onmove');
           });
 
+        console.log(this.class, this);
         if (this.class === 'event') {
           let targs = DICT.select('!event');
+          console.log(targs);
           for (let i = 0, l = targs.length; i < l; ++i) {
             let bubble = targs[i];
             if (!bubble.events.includes(this.id)) continue;
