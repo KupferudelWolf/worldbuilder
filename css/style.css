@@ -22,7 +22,8 @@ body {
   position: relative;
   margin: 25%;
   background-color: #ffdddd;
-  transition: left 0.25s ease-out 0s, top 0.25s ease-out 0s;
+  transition: left 0.25s ease-out 0s,
+              top 0.25s ease-out 0s;
   /* min-width: 100%; */
   /* min-height: 100%; */
   cursor: grab;
@@ -49,12 +50,19 @@ body {
   align-items: center;
   justify-content: center;
   cursor: move;
+  transition: width 0.25s ease-out 0s, height 0.25s ease-out 0s;
 }
 
 .bubble.character {
   background-color: var(--color-bubble-character);
   width: 96px;
   height: 96px;
+  z-index: 80;
+}
+.bubble.location {
+  background-color: var(--color-bubble-location);
+  width: 112px;
+  height: 112px;
   z-index: 100;
 }
 .bubble.event {
