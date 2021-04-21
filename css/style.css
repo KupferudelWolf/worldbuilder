@@ -1,35 +1,81 @@
+:root {
+  --color-bubble-character: #aaaaffaa;
+  --color-bubble-location: #aaffccaa;
+  --color-bubble-event: #ffffaaaa;
+}
+
 body {
-  margin: 0;
+  /* margin: 0; */
 }
 
-.wrapper {
-  width: auto;
-  height: auto;
-  margin: 32px;
-  margin-bottom: 0px;
-  background-color: #ffaaaa;
-  padding-left: 100px;
-  padding-top: 16px;
-  padding-bottom: 24px;
-  display: block;
+.bubble-frame {
+  /* position: relative; */
+  border-style: inset;
+  border-color: black;
+  border-width: medium;
+  width: 640px;
+  height: 640px;
+  overflow: hidden;
 }
 
-.section {
-  background-color: #aaaaff;
+.bubble-container {
+  position: relative;
+  margin: 25%;
+  background-color: #ffdddd;
+  transition: left 0.25s ease-out 0s, top 0.25s ease-out 0s;
+  /* min-width: 100%; */
+  /* min-height: 100%; */
+  cursor: grab;
+}
+.bubble-container.active {
+  transition: none;
+  cursor: grabbing;
 }
 
-table {
-  border-spacing: 0;
-}
-th {
-  text-align: left;
-  width: 20vw;
+.bubble-container > * {
+  /* position: absolute; */
 }
 
-table.section {
-  border-spacing: 4px 20px;
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: black;
+  border-width: medium;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: move;
 }
-td input {
-  /* width: 100%; */
-  /* height: 40px; */
+
+.bubble.character {
+  background-color: var(--color-bubble-character);
+  width: 96px;
+  height: 96px;
+  z-index: 100;
+}
+.bubble.event {
+  background-color: var(--color-bubble-event);
+  width: 72px;
+  height: 72px;
+  font-size: 75%;
+  z-index: 20;
+}
+
+
+.bubbleSVG {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
+.bubbleSVG line {
+  stroke: black;
+  stroke-width: 2px;
 }
